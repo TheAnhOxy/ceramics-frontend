@@ -138,27 +138,49 @@ ceramics-frontend/
 +-----------------------------------+-----------------------------------------------+
 ```
 
-## 5. Hướng Dẫn Cài Đặt Và Chạy
+## 5. Hướng Dẫn Cài Đặt Và Chạy Dự Án (Setup Guide)
 
 ```
 +-----------------------------------------------------------------------------------+
-| QUY TRÌNH THỰC THI                                                                |
+| QUY TRÌNH THỰC THI THỦ CÔNG                                                       |
 |                                                                                   |
-| (1) Mở Terminal  ---> (2) npm install  ---> (3) npm run dev  ---> (4) Web Open    |
-|     (Thư mục FE)          (Tải thư viện)        (Khởi chạy)       (Cổng 5173)     |
+|  (1) Git Clone  ---> (2) CD Thư Mục  ---> (3) NPM Install  ---> (4) NPM Run Dev   |
+|  (Tải mã nguồn)      (Dự án FE)          (Cài thư viện)        (Mở Web UI)        |
 +-----------------------------------------------------------------------------------+
 ```
 
 ### Yêu Cầu Môi Trường
 - Node.js từ phiên bản 18 trở lên.
-- Server backend đã được khởi chạy ở cổng 8080.
+- Server backend Spring Boot đang hoạt động ở địa chỉ http://localhost:8080.
 
-### Các Lệnh Thực Hiện
-1. Cài đặt các thư viện phụ thuộc:
+### Bước 1: Clone Mã Nguồn Dự Án
+Tải mã nguồn dự án về máy bằng lệnh Git:
+```bash
+git clone <url-du-an-git>
+```
+
+### Bước 2: Di Chuyển Vào Thư Mục Frontend
+Mở cửa sổ dòng lệnh (Terminal/PowerShell) và di chuyển vào thư mục giao diện frontend:
+```bash
+cd ceramics-frontend
+```
+
+### Bước 3: Cài Đặt Thư Viện Phụ Thuộc
+Chạy lệnh npm để tải và cài đặt toàn bộ các thư viện cần thiết (React, Bootstrap, Axios, FontAwesome...):
+```bash
 npm install
+```
 
-2. Khởi chạy giao diện ở chế độ phát triển:
+### Bước 4: Khởi Chạy Ứng Dụng (Development)
+Chạy ứng dụng ở chế độ phát triển thử nghiệm:
+```bash
 npm run dev
+```
+Sau khi lệnh chạy thành công, trình duyệt web sẽ mở tại địa chỉ: http://localhost:5173
 
-3. Đóng gói ứng dụng cho môi trường thực tế:
+### Bước 5: Đóng Gói Ứng Dụng (Production Build)
+Khi cần đóng gói ứng dụng để đưa lên máy chủ thực tế:
+```bash
 npm run build
+```
+Kết quả đóng gói sản phẩm sẽ nằm trong thư mục dist.
