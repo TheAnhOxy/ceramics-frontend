@@ -1,186 +1,149 @@
-# Giao Diện Quản Lý Và Điều Phối Xưởng Gốm Bát Tràng
+# HỆ THỐNG ĐIỀU PHỐI VÀ GIÁM SÁT QUY TRÌNH SẢN XUẤT XƯỞNG GỐM BÁT TRÀNG
+## ỨNG DỤNG GIAO DIỆN WEB FRONTEND (REACT 18 + VITE)
 
-Dự án giao diện Web phục vụ việc quản lý, tiếp nhận đơn hàng và theo dõi tiến độ sản xuất gốm sứ theo từng công đoạn liên hoàn tại xưởng.
+Mã nguồn ứng dụng giao diện Web Frontend xây dựng bằng React 18 và Vite, đóng vai trò trực quan hóa tiến độ chế tác gốm sứ Bát Tràng theo 6 công đoạn liên hoàn. Giao diện được thiết kế phẳng theo ngôn ngữ mỹ thuật màu đất nung truyền thống Bát Tràng, hỗ trợ Bảng điều phối Kanban 7 cột màn hình rộng, tiếp nhận đơn hàng tự nhiên với sự hỗ trợ của AI Agent và hiển thị cảnh báo lỗi QC khẩn cấp thời gian thực.
 
-## 1. Giới Thiệu
+---
+
+## I. GIỚI THIỆU BÀI TOÁN GIAO DIỆN VÀ GIẢI PHÁP MỸ THUẬT FRONTEND
+
+### 1. Bài Toán Trải Nghiệm Người Dùng (UX Challenges) Tại Xưởng Gốm
+- **Môi trường thao tác màn hình rộng xưởng sản xuất**: Thợ xưởng và quản lý cần quan sát vị trí của hàng chục mẻ gốm trên một giao diện trực quan, không bị đè nén hay che khuất chữ.
+- **Trải nghiệm nhập liệu thông minh**: Tránh việc thợ phải gõ lại số lượng sản phẩm thủ công khi câu văn mô tả đã chứa thông tin con số (Ví dụ: *"Đơn 500 Bộ ấm trà..."*).
+- **Lưu vết dữ liệu cũ khi đóng Popup**: Khi tạo xong một đơn hàng và đóng Modal, dữ liệu bóc tách của đơn trước không được tồn đọng khi mở tạo đơn mới.
+
+### 2. Giải Pháp Ngôn Ngữ Thiết Kế & Mỹ Thuật Bát Tràng (Ceramic Craft Palette)
+- **Terracotta (Màu Đất Nung `#C85A32`)**: Màu chủ đạo đại diện cho phôi đất và lò nung Bát Tràng, áp dụng cho các nút bấm thao tác chính, viền điểm nhấn và nhãn mẻ gốm.
+- **Glaze Green (Màu Men Lá `#3F6212`)**: Màu đại diện cho công đoạn tráng men và mẻ gốm đạt chuẩn chất lượng xuất xưởng.
+- **Soft Sand (Màu Cát Mịn `#F7F4EE`)**: Màu nền dịu mắt giúp người quản lý quan sát màn hình liên tục tại xưởng không bị mỏi mắt.
+- **Critical Red (Màu Đỏ Khẩn Cấp `#DC2626`)**: Bật Toast màu đỏ khẩn cấp và viền cảnh báo khi tỷ lệ sản phẩm lỗi QC vượt ngưỡng 3%.
+
+---
+
+## II. KIẾN TRÚC MÃ NGUỒN VÀ COMPONENT TREE FRONTEND
 
 ```
 +-----------------------------------------------------------------------------------+
-|                           MÔ HÌNH TỔNG QUAN HỆ THỐNG                              |
+|                        MÔ HÌNH CÂY COMPONENT VÀ STATE DỮ LIỆU                     |
 |                                                                                   |
-|  [Trình Duyệt Web UI]  <===>  [API Axios Service]  <===>  [Spring Boot Server]   |
-|  (Bảng Kanban / Modal)        (api.js / Port 8080)        (REST API Backend)      |
+|                                     [App.jsx]                                     |
+|                      (State Trung Tâm, ActiveTab & Polling 8s)                    |
+|                                         |                                         |
+|      +----------------------------------+----------------------------------+      |
+|      |                                  |                                  |      |
+|      v                                  v                                  v      |
+| [Navbar.jsx]                   [KanbanBoard.jsx]                 [DashboardStats] |
+| (Header & Brand)               (Bảng 7 Cột Rộng)                 (5 Thẻ KPI Xưởng)|
+|                                         |                                         |
+|                                         v                                         |
+|                                [OrderFormModal.jsx]                               |
+|                                (Popup Nhập AI & Preview)                          |
+|                                         |                                         |
+|      +----------------------------------+----------------------------------+      |
+|      |                                  |                                  |      |
+|      v                                  v                                  v      |
+| [OrderDetailModal.jsx]        [AdvanceStageModal.jsx]               [QcModal.jsx] |
+| (Chi Tiết & Timeline)         (Popup Chuyển Bước)                   (Popup QC Lỗi)|
 +-----------------------------------------------------------------------------------+
 ```
 
-Giao diện được xây dựng bằng React và Bootstrap 5 với bố cục màn hình rộng, giúp người quản lý và thợ xưởng dễ dàng theo dõi vị trí của từng mẻ gốm qua các trạm sản xuất. Hệ thống hỗ trợ bóc tách thông số kỹ thuật đơn hàng từ mô tả tự nhiên, quản lý tiến độ dạng bảng Kanban và phát cảnh báo khi tỷ lệ sản phẩm lỗi vượt quá mức cho phép.
-
-## 2. Các Chức Năng Chính
-
-```
-+-----------------------------------------------------------------------------------+
-| 1. BẢNG KANBAN TIẾN ĐỘ SẢN XUẤT (7 CỘT)                                            |
-|                                                                                   |
-| [Tạo hình mộc] -> [Phơi sấy & sửa] -> [Vẽ họa tiết] -> [Tráng men] -> [Vào lò]   |
-|                                                                        |          |
-| [Xuất xưởng]   <- [Kiểm định QC & đóng gói] <--------------------------+          |
-+-----------------------------------------------------------------------------------+
-| 2. TIẾP NHẬN & PHÂN TÍCH ĐƠN HÀNG                                                 |
-|                                                                                   |
-|  (Mô tả văn bản tự nhiên)  --->  (Tự động phân tích bóc tách thông số)            |
-|                                                |                                  |
-|                                                v                                  |
-|  [Tên SP | Loại men | Nhiệt độ nung | Đất sét | Thời gian nung | Mức ưu tiên]      |
-+-----------------------------------------------------------------------------------+
-| 3. XEM CHI TIẾT ĐƠN HÀNG & LỊCH SỬ CÔNG ĐOẠN                                       |
-|                                                                                   |
-|  Thông tin đơn hàng -> Bảng timeline lịch sử 6 công đoạn thực tế                  |
-|  (Trạm công đoạn | Trạng thái | Thời gian hoàn thành | Người thực hiện | Ghi chú) |
-+-----------------------------------------------------------------------------------+
-| 4. KIỂM ĐỊNH QC & CẢNH BÁO TỶ LỆ LỖI KHẨN CẤP                                     |
-|                                                                                   |
-|  Tỷ lệ lỗi (%) = (Số sản phẩm lỗi / Tổng kiểm định) * 100                        |
-|  - Nếu Tỷ lệ lỗi > 3%: Kích hoạt Cảnh Báo Đỏ & Bắn thông báo khẩn tới nhóm chat    |
-+-----------------------------------------------------------------------------------+
-| 5. DANH SÁCH ĐƠN HÀNG & PHÂN TRANG NÂNG CAO                                       |
-|                                                                                   |
-|  - Ô tìm kiếm nhanh theo mã đơn, khách hàng hoặc tên sản phẩm.                    |
-|  - Phân trang: Chọn hiển thị 5, 10, 20, 50 đơn/trang và nút điều hướng trang.      |
-+-----------------------------------------------------------------------------------+
-| 6. BÁO CÁO THỐNG KÊ KPI XƯỞNG                                                     |
-|                                                                                   |
-|  Tổng đơn hàng | Mẻ đang chế tác | Mẻ hoàn thành | Tỷ lệ đạt QC (%) | Cảnh báo đỏ |
-+-----------------------------------------------------------------------------------+
-```
-
-### Bảng Kanban Theo Dõi Tiến Độ
-Hiển thị danh sách các mẻ gốm phân chia theo 6 công đoạn sản xuất liên hoàn cùng cột hoàn thành xuất xưởng:
-- Tạo hình mộc (Khởi tạo mẻ gốm ban đầu)
-- Phơi sấy và sửa mộc (Sấy khô và chỉnh sửa dáng mộc)
-- Vẽ họa tiết (Trang trí hoa văn thủ công)
-- Tráng men (Phủ lớp men bảo vệ và tạo màu)
-- Vào lò nung (Nung nhiệt độ cao trong lò)
-- Kiểm định chất lượng và đóng gói (QC đánh giá tỷ lệ lỗi và đóng gói)
-- Hoàn thành xuất xưởng (Mẻ gốm hoàn tất quy trình)
-
-Dữ liệu trên bảng Kanban được cập nhật tự động định kỳ để phản ánh trạng thái thực tế tại xưởng. Trên mỗi mẻ gốm có nút thao tác chuyển công đoạn và ghi nhận kiểm định.
-
-### Tiếp Nhận Và Phân Tích Đơn Hàng
-Người dùng nhập thông tin khách hàng và mô tả yêu cầu đơn hàng dạng văn bản tự nhiên. Hệ thống tự động phân tích và đưa ra các thông số kỹ thuật như tên sản phẩm, loại men, nhiệt độ nung, thời gian nung, lượng đất sét ước tính và mức độ ưu tiên. Thông số sau khi phân tích sẽ được hiển thị ngay trong cửa sổ tiếp nhận để người quản lý kiểm tra trước khi chuyển sang bảng tiến độ.
-
-### Xem Chi Tiết Đơn Hàng Và Lịch Sử Công Đoạn
-Cho phép xem lại toàn bộ thông tin đơn hàng cùng bảng lịch sử ghi nhận chi tiết qua từng bước sản xuất. Bảng lịch sử hiển thị rõ trạng thái của từng công đoạn, thời gian hoàn thành, người thực hiện và ghi chú kèm theo.
-
-### Kiểm Định Chất Lượng Và Đánh Giá Tỷ Lệ Lỗi
-Cho phép thợ kiểm định nhập tổng số sản phẩm kiểm tra, số lượng bị lỗi và loại lỗi phát sinh. Hệ thống tự động tính tỷ lệ lỗi theo phần trăm. Nếu tỷ lệ lỗi vượt quá 3%, giao diện sẽ hiển thị cảnh báo đỏ và gửi thông báo khẩn cấp tới quản lý.
-
-### Danh Sách Đơn Hàng Và Phân Trang
-Trang quản lý đơn hàng hỗ trợ ô tìm kiếm nhanh theo mã đơn, tên khách hàng hoặc tên sản phẩm. Danh sách có bộ chọn số lượng hiển thị trên mỗi trang (5, 10, 20, 50 đơn hàng) và đầy đủ các nút chuyển trang.
-
-### Báo Cáo Thống Kê KPI
-Cung cấp các thẻ thống kê tổng quan về số lượng đơn hàng tiếp nhận, số mẻ gốm đang chế tác, số mẻ đã hoàn thành, tỷ lệ đạt chất lượng và các sự cố cảnh báo đỏ.
-
-## 3. Cấu Trúc Thư Mục
-
+### 1. Cấu Trúc Thư Mục Dự Án (Directory Architecture)
 ```
 ceramics-frontend/
-├── index.html
-├── package.json
-├── vite.config.js
+├── index.html                          (File HTML gốc của ứng dụng)
+├── package.json                        (Khai báo danh sách phụ thuộc React 18, Vite, Axios, Bootstrap 5)
+├── vite.config.js                      (Cấu hình cổng khởi chạy 5173 và đóng gói sản phẩm)
 └── src/
-    ├── main.jsx
-    ├── App.jsx
+    ├── main.jsx                        (Điểm khởi chạy ứng dụng React)
+    ├── App.jsx                         (Component quản lý state trung tâm, điều hướng Tab & Realtime Polling)
     ├── services/
-    │   └── api.js
+    │   └── api.js                      (Thư viện Axios cấu hình gọi API RESTful kết nối Server Backend)
     ├── styles/
-    │   └── ceramic.css
+    │   └── ceramic.css                 (Hệ thống định kiểu màu sắc di sản gốm sứ Bát Tràng)
     └── components/
-        ├── Navbar.jsx
-        ├── KanbanBoard.jsx
-        ├── OrderFormModal.jsx
-        ├── OrderDetailModal.jsx
-        ├── AdvanceStageModal.jsx
-        ├── QcModal.jsx
-        ├── DashboardStats.jsx
-        └── OrderList.jsx
+        ├── Navbar.jsx                  (Thanh điều hướng tiêu đề ứng dụng)
+        ├── KanbanBoard.jsx             (Component Bảng Kanban 7 cột màn hình rộng)
+        ├── OrderFormModal.jsx          (Popup tiếp nhận đơn hàng & hiển thị thông số AI)
+        ├── OrderDetailModal.jsx        (Popup chi tiết đơn hàng & lịch sử 6 công đoạn)
+        ├── AdvanceStageModal.jsx       (Popup thao tác chuyển mẻ gốm sang bước mới)
+        ├── QcModal.jsx                 (Popup kiểm định chất lượng & tính tỷ lệ lỗi)
+        ├── DashboardStats.jsx          (Component hiển thị các thẻ thống kê KPI xưởng)
+        └── OrderList.jsx               (Component danh sách đơn hàng có phân trang & tìm kiếm)
 ```
 
-- index.html: Trang HTML gốc của ứng dụng.
-- package.json: File khai báo danh sách các thư viện phụ thuộc và kịch bản thực thi.
-- vite.config.js: Cấu hình công cụ biên dịch và cổng khởi chạy dự án.
-- src/main.jsx: Điểm khởi chạy chính ứng dụng React.
-- src/App.jsx: Component trung tâm quản lý trạng thái, chuyển tab và hiển thị các cửa sổ thao tác.
-- src/services/api.js: Thư viện xử lý gọi API kết nối với server backend.
-- src/styles/ceramic.css: Định kiểu giao diện với bảng màu gốm sứ Bát Tràng.
-- src/components/Navbar.jsx: Thanh điều hướng phía trên màn hình.
-- src/components/KanbanBoard.jsx: Component hiển thị bảng Kanban 7 cột.
-- src/components/OrderFormModal.jsx: Cửa sổ tiếp nhận đơn hàng và hiển thị thông số phân tích.
-- src/components/OrderDetailModal.jsx: Cửa sổ xem chi tiết đơn hàng và lịch sử công đoạn.
-- src/components/AdvanceStageModal.jsx: Cửa sổ thao tác chuyển mẻ gốm sang bước tiếp theo.
-- src/components/QcModal.jsx: Cửa sổ ghi nhận kết quả kiểm định chất lượng.
-- src/components/DashboardStats.jsx: Component hiển thị các thẻ thống kê KPI.
-- src/components/OrderList.jsx: Component hiển thị danh sách đơn hàng có phân trang và tìm kiếm.
+---
 
-## 4. Sơ Đồ Kết Nối API
-
-```
-+-----------------------------------+-----------------------------------------------+
-| ĐƯỜNG DẪN API (BACKEND)           | CHỨC NĂNG TÍCH HỢP TRÊN GIAO DIỆN WEB         |
-+-----------------------------------+-----------------------------------------------+
-| GET  /api/orders                  | Tải danh sách đơn hàng cho trang OrderList    |
-| POST /api/orders                  | Gửi mô tả văn bản tự nhiên để phân tích & tạo |
-| GET  /api/orders/{id}             | Tải thông tin chi tiết đơn hàng & mẻ gốm      |
-| GET  /api/batches                 | Tải danh sách mẻ gốm cho Bảng Kanban          |
-| PATCH /api/batches/{id}/advance   | Chuyển công đoạn sản xuất mẻ gốm sang bước mới |
-| POST /api/qc                      | Lưu kết quả kiểm định & kiểm tra tỷ lệ lỗi >3%|
-| GET  /api/dashboard/stats         | Tải các chỉ số thống kê KPI cho Dashboard     |
-| GET  /api/dashboard/kanban        | Tải dữ liệu các cột trên Bảng Kanban          |
-+-----------------------------------+-----------------------------------------------+
-```
-
-## 5. Hướng Dẫn Cài Đặt Và Chạy Dự Án (Setup Guide)
+## III. SƠ ĐỒ TƯƠNG TÁC NGƯỜI DÙNG TRÊN GIAO DIỆN (FRONTEND USER FLOW)
 
 ```
 +-----------------------------------------------------------------------------------+
-| QUY TRÌNH THỰC THI THỦ CÔNG                                                       |
+|                        SƠ ĐỒ TƯƠNG TÁC NGƯỜI DÙNG WEB                             |
 |                                                                                   |
-|  (1) Git Clone  ---> (2) CD Thư Mục  ---> (3) NPM Install  ---> (4) NPM Run Dev   |
-|  (Tải mã nguồn)      (Dự án FE)          (Cài thư viện)        (Mở Web UI)        |
+|  1. BẤM [✨ TẠO ĐƠN HÀNG AI] ---> Mở OrderFormModal                              |
+|     - Gõ văn bản mô tả tự nhiên                                                   |
+|     - Auto-Sync: Tự động tách con số điền vào ô Số lượng sản phẩm                 |
+|     - Gửi AI phân tích ---> Hiện ngay bảng preview 10 thông số JSON màu xanh      |
+|                                                                                   |
+|  2. BẢNG KANBAN TIẾN ĐỘ (Realtime Polling 8 giây)                                 |
+|     - 6 Cột công đoạn + 1 Cột Hoàn thành                                          |
+|     - Mỗi thẻ mẻ gốm có cặp nút ép thẳng 1 dòng: [Chuyển Bước ➡️] và [🔍 QC]       |
+|                                                                                   |
+|  3. BẤM [🔍 QC] TRÊN BẢCH KANBAN ---> Mở QcModal                                  |
+|     - Nhập Số sản phẩm kiểm tra & Số lỗi phát sinh                                |
+|     - Tự động tính Tỷ lệ lỗi (%) = (Số lỗi / Tổng kiểm tra) * 100                 |
+|     - Nếu Tỷ lệ lỗi > 3% ---> Nổi Toast ĐỎ khẩn cấp trên màn hình Web              |
+|                                                                                   |
+|  4. TAB [QUẢN LÝ ĐƠN HÀNG] & [BÁO CÁO KPI]                                        |
+|     - Tìm kiếm nhanh theo mã đơn, khách hàng, tên SP                              |
+|     - Phân trang linh hoạt: Chọn 5, 10, 20, 50 đơn/trang                           |
+|     - Bấm xem chi tiết ---> Mở OrderDetailModal xem Bảng Lịch Sử 6 Công Đoạn       |
 +-----------------------------------------------------------------------------------+
 ```
 
-### Yêu Cầu Môi Trường
-- Node.js từ phiên bản 18 trở lên.
-- Server backend Spring Boot đang hoạt động ở địa chỉ http://localhost:8080.
+---
 
-### Bước 1: Clone Mã Nguồn Dự Án
-Tải mã nguồn dự án về máy bằng lệnh Git:
-```bash
-git clone <url-du-an-git>
-```
+## IV. CÁC ĐIỂM TỐI ƯU TRẢI NGHIỆM VÀ KỸ THUẬT FRONTEND (UX HIGHLIGHTS)
 
-### Bước 2: Di Chuyển Vào Thư Mục Frontend
-Mở cửa sổ dòng lệnh (Terminal/PowerShell) và di chuyển vào thư mục giao diện frontend:
+1. **Giao Diện Nút Bấm 1 Dòng (`white-space: nowrap`)**:
+   - Cặp nút bấm **`[ Chuyển Bước ➡️ ]`** và **`[ 🔍 QC ]`** trên từng thẻ mẻ gốm được cân chỉnh tỷ lệ phẳng đẹp, không bao giờ bị rớt dòng chữ hay đè nén icon.
+2. **Auto-Sync Số Lượng Từ Văn Bản Tự Nhiên**:
+   - Khi người dùng nhập mô tả đơn hàng (Ví dụ: *"Đơn 500 Bộ ấm trà tử sa..."*), hệ thống tự động trích xuất con số `500` và cập nhật trực tiếp vào ô *Số Lượng Sản Phẩm*, giảm bớt thao tác gõ tay.
+3. **Reset Trạng Thái Modal Chuẩn Xác**:
+   - Khi bấm đóng Popup tiếp nhận đơn hàng, hệ thống tự động làm sạch `lastAiResult = null` và xóa trắng các ô nhập liệu, đảm bảo lần mở tạo đơn tiếp theo luôn sẵn sàng 100%.
+4. **Tự Động Đồng Bộ Cập Nhật Thời Gian Thực (Auto Polling)**:
+   - `App.jsx` tự động thực hiện truy vấn làm mới dữ liệu Bảng Kanban định kỳ mỗi 8 giây. Khi thợ xác nhận tiến độ trên Slack/Zalo, Bảng Kanban trên Web lập tức cập nhật mẻ gốm sang cột mới.
+
+---
+
+## V. HƯỚNG DẪN CÀI ĐẶT VÀ KHỞI CHẠY DỰ ÁN FRONTEND (SETUP GUIDE)
+
+### Yêu Cầu Môi Trường Máy Trạm
+- Node.js phiên bản 18.0 trở lên.
+- Trình quản lý gói `npm` (đi kèm sẵn với Node.js).
+- Dịch vụ Backend Spring Boot đang khởi chạy tại địa chỉ `http://localhost:8080`.
+
+### 1. Di Chuyển Vào Thư Mục Frontend
+Mở cửa sổ dòng lệnh (Terminal / PowerShell) và di chuyển vào thư mục giao diện web:
 ```bash
 cd ceramics-frontend
 ```
 
-### Bước 3: Cài Đặt Thư Viện Phụ Thuộc
-Chạy lệnh npm để tải và cài đặt toàn bộ các thư viện cần thiết (React, Bootstrap, Axios, FontAwesome...):
+### 2. Cài Đặt Các Thư Viện Phụ Thuộc (Dependencies)
+Chạy lệnh `npm install` để tải toàn bộ các thư viện React, Vite, Axios, Bootstrap 5, FontAwesome...:
 ```bash
 npm install
 ```
 
-### Bước 4: Khởi Chạy Ứng Dụng (Development)
-Chạy ứng dụng ở chế độ phát triển thử nghiệm:
+### 3. Khởi Chạy Web Ở Chế Độ Phát Triển (Development Mode)
+Thực hiện lệnh khởi chạy máy chủ phát triển Vite:
 ```bash
 npm run dev
 ```
-Sau khi lệnh chạy thành công, trình duyệt web sẽ mở tại địa chỉ: http://localhost:5173
+Sau khi lệnh thực thi thành công, trình duyệt web sẽ mở tại địa chỉ: `http://localhost:5173`
 
-### Bước 5: Đóng Gói Ứng Dụng (Production Build)
-Khi cần đóng gói ứng dụng để đưa lên máy chủ thực tế:
+### 4. Đóng Gói Sản Phẩm (Production Build)
+Khi cần biên dịch ứng dụng để đưa lên máy chủ thực tế:
 ```bash
 npm run build
 ```
-Kết quả đóng gói sản phẩm sẽ nằm trong thư mục dist.
+Sản phẩm đóng gói biên dịch hoàn chỉnh sẽ được tạo ra trong thư mục `dist/`.
