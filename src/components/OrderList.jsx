@@ -55,7 +55,7 @@ export default function OrderList({ orders = [], onSelectOrder }) {
             <i className="fa-solid fa-boxes-packing text-warning"></i>
             <span>Danh Sách Đơn Hàng Xưởng Gốm Bát Tràng ({totalItems})</span>
           </h5>
-          <small className="text-muted">Quản lý và theo dõi thông số đơn hàng bóc tách bởi Gemini AI</small>
+          <small className="text-muted">Quản lý và theo dõi thông số đơn hàng bóc tách bởi AI</small>
         </div>
 
         <div className="d-flex align-items-center gap-3 flex-wrap">
@@ -104,7 +104,7 @@ export default function OrderList({ orders = [], onSelectOrder }) {
             <tr>
               <th className="ps-4">Mã Đơn Hàng</th>
               <th>Khách Hàng</th>
-              <th>Sản Phẩm (Gemini AI)</th>
+              <th>Sản Phẩm (AI Bóc Tách)</th>
               <th>Nhiệt Độ Nung</th>
               <th>Số Lượng</th>
               <th>Hạn Giao</th>
