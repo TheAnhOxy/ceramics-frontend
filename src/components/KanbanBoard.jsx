@@ -78,28 +78,29 @@ export default function KanbanBoard({ kanbanData, onOpenAdvanceModal, onOpenQcMo
                       })}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="d-flex gap-2 mt-2">
+                    {/* Nút Thao Tác Của Mỗi Thẻ: Thiết Kế Gọn Đẹp, Không Bị Xuống Dòng */}
+                    <div className="d-flex align-items-center gap-1.5 mt-3">
                       {col.stageCode !== 'COMPLETED' && (
                         <button
-                          className="btn btn-terracotta btn-sm flex-fill d-inline-flex align-items-center justify-content-center gap-1.5"
+                          className="btn btn-terracotta btn-sm flex-fill d-inline-flex align-items-center justify-content-center gap-1 py-1.5 px-2 text-nowrap fw-semibold"
+                          style={{ fontSize: '0.8rem' }}
+                          title="Chuyển sang công đoạn tiếp theo"
                           onClick={() => onOpenAdvanceModal(batch)}
                         >
-                          <i className="fa-solid fa-arrow-right"></i>
                           <span>Chuyển Bước</span>
+                          <i className="fa-solid fa-arrow-right small"></i>
                         </button>
                       )}
 
-                      {col.stageCode === 'QC_PACKAGING' && (
-                        <button
-                          className="btn btn-outline-danger btn-sm px-2.5 d-inline-flex align-items-center justify-content-center gap-1"
-                          title="Nhập kết quả QC"
-                          onClick={() => onOpenQcModal(batch)}
-                        >
-                          <i className="fa-solid fa-shield-cat"></i>
-                          <span>QC</span>
-                        </button>
-                      )}
+                      <button
+                        className="btn btn-warning text-dark btn-sm d-inline-flex align-items-center justify-content-center gap-1 py-1.5 px-2.5 text-nowrap fw-bold shadow-sm"
+                        style={{ fontSize: '0.8rem', minWidth: '70px' }}
+                        title="Báo cáo kiểm định QC và tính tỷ lệ lỗi (%) tại bước này"
+                        onClick={() => onOpenQcModal(batch)}
+                      >
+                        <i className="fa-solid fa-magnifying-glass"></i>
+                        <span>QC</span>
+                      </button>
                     </div>
 
                   </div>
