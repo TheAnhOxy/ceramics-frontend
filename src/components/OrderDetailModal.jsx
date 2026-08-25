@@ -71,11 +71,11 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
               </div>
             </div>
 
-            {/* 3. Bóc Tách Thông Số Gemini AI Đầy Đủ (10 Trường) */}
+            {/* 3. Bóc Tách Thông Số AI Đầy Đủ (10 Trường) */}
             <div className="ai-preview-box mb-4">
               <h6 className="fw-bold text-success d-flex align-items-center gap-2 mb-3 fs-5">
                 <i className="fa-solid fa-brain"></i>
-                <span>Thông Số Kỹ Thuật Gemini AI Bóc Tách Đầy Đủ:</span>
+                <span>Thông Số Kỹ Thuật AI Bóc Tách Đầy Đủ:</span>
               </h6>
 
               <div className="row g-3">
@@ -138,7 +138,7 @@ export default function OrderDetailModal({ isOpen, onClose, order }) {
                 <div className="col-12 col-md-4">
                   <div className="p-2.5 bg-white rounded-3 border">
                     <small className="text-muted d-block">Ghi Chú AI Agent:</small>
-                    <small className="text-success fw-semibold">{ai.confidence_note || 'Trích xuất chính xác bởi Gemini AI'}</small>
+                    <small className="text-success fw-semibold">{ai.confidence_note || 'Trích xuất chính xác bởi AI Agent'}</small>
                   </div>
                 </div>
               </div>
