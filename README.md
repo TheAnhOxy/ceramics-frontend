@@ -1,25 +1,20 @@
 # HỆ THỐNG ĐIỀU PHỐI VÀ GIÁM SÁT QUY TRÌNH SẢN XUẤT XƯỞNG GỐM BÁT TRÀNG
-## BÁO CÁO MÃ NGUỒN GIAO DIỆN WEB FRONTEND (REACT 18 + VITE)
 
-Tài liệu hướng dẫn và giải thích mã nguồn phần giao diện Web Frontend của Hệ thống điều phối sản xuất xưởng gốm Bát Tràng. Giao diện được xây dựng bằng thư viện React 18, Vite và Bootstrap 5, giúp quản lý xưởng và thợ theo dõi tiến độ sản xuất 6 công đoạn liên hoàn, tiếp nhận đơn hàng tự nhiên qua AI và phát cảnh báo sự cố khẩn cấp.
+## 1. GIỚI THIỆU BÀI TOÁN THỰC TẾ XƯỞNG GỐM BÁT TRÀNG
 
----
+### Bối Cảnh Nghiệp Vụ Thực Tế
+Xưởng gốm sứ Bát Tràng tiếp nhận hàng trăm đơn hàng gia công chế tác gốm sứ thủ công và công nghiệp mỗi tháng. Các đơn hàng gửi về từ các đại lý, nhà hàng, khách sạn thường ở dạng câu văn mô tả tự nhiên (Ví dụ: *"Đơn 500 Bộ ấm trà tử sa họa tiết men rạn cổ cao 18cm, nung lò 1250°C trong 20 giờ, giao gấp trong 7 ngày"*).
 
-## 1. TỔNG QUAN VỀ GIAO DIỆN VÀ Ý TƯỞNG THIẾT KẾ
+### Các Thách Thức Đặt Ra Cho Giao Diện Web
+1. **Theo dõi trực quan 6 công đoạn**: Quá trình sản xuất trải qua 6 trạm liên hoàn (*Tạo hình mộc $\rightarrow$ Phơi sấy & Sửa mộc $\rightarrow$ Vẽ họa tiết $\rightarrow$ Tráng men $\rightarrow$ Vào lò nung $\rightarrow$ QC & Đóng gói*). Thợ xưởng và quản lý cần một màn hình rộng trực quan hóa vị trí của từng mẻ gốm mà không bị che khuất chữ hay đè icon.
+2. **Tiếp nhận đơn hàng tự nhiên**: Tránh việc thợ phải gõ tay nhập liệu rườm rà. Giao diện tích hợp AI bóc tách tự động 10 thông số kỹ thuật và hiển thị bảng xem trước (preview) ngay trong Popup.
+3. **Cảnh báo lỗi khẩn cấp tức thì**: Khi thợ QC kiểm định và phát hiện tỷ lệ lỗi vượt quá 3%, giao diện Web lập tức bật thông báo đỏ khẩn cấp và hiển thị viền báo động trực quan.
 
-```
-+-----------------------------------------------------------------------------------+
-|                           MÔ HÌNH TỔNG QUAN HỆ THỐNG WEB                          |
-|                                                                                   |
-|  [Trình Duyệt Web UI]  <===>  [API Axios Service]  <===>  [Spring Boot Server]   |
-|  (React 18 / Bảng Kanban)     (services/api.js)           (Port 8080 Backend)     |
-+-----------------------------------------------------------------------------------+
-```
-
-### Lựa Chọn Màu Sắc Và Bố Cục
-- Giao diện sử dụng bảng màu mô phỏng làng nghề gốm sứ Bát Tràng với tông màu đất nung Terracotta `#C85A32` làm chủ đạo cho các nút bấm chính và nhãn hiển thị.
-- Tông màu cát nhẹ `#F7F4EE` làm màu nền tổng thể giúp không bị chói mắt khi theo dõi màn hình lâu tại xưởng.
-- Bố cục màn hình rộng hiển thị trọn vẹn Bảng Kanban 7 cột, giúp quan sát toàn bộ vị trí mẻ gốm từ khâu tạo hình đến khâu xuất xưởng mà không bị đè chữ.
+### Mục Tiêu Giải Pháp Của Frontend
+- Xây dựng giao diện Web màn hình rộng co giãn linh hoạt bằng React 18, Vite và Bootstrap 5.
+- Thiết kế Bảng Kanban 7 cột hiển thị danh sách mẻ gốm với đầy đủ nút bấm `Chuyển Bước` và `QC` phẳng đẹp.
+- Áp dụng cơ chế tự động đồng bộ dữ liệu thời gian thực (Realtime Auto Polling 8 giây).
+- Tối ưu trải nghiệm người dùng: Tự động tách số lượng từ văn bản mô tả (Auto-sync) và tự làm sạch Modal state khi đóng.
 
 ---
 
