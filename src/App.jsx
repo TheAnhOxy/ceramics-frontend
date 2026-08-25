@@ -60,7 +60,7 @@ export default function App() {
     setLastAiResult(null);
     try {
       const res = await ceramicsApi.createOrder(orderPayload);
-      toast.success('🎉 Tiếp nhận đơn hàng và Gemini AI bóc tách thông số thành công!', { duration: 4000 });
+      toast.success('🎉 Tiếp nhận đơn hàng và AI bóc tách thông số thành công!', { duration: 4000 });
       setLastAiResult(res.data?.aiExtraction);
       loadData();
       // Không tự đóng modal để người dùng xem kết quả bóc tách ngay tại Popup!
@@ -132,9 +132,6 @@ export default function App() {
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div>
                 <h4 className="fw-bold brand-font text-dark mb-0 fs-3">Bảng Kanban Tiến Độ Chế Tác Gốm Sứ Bát Tràng</h4>
-                <p className="text-muted mb-0 small">
-                  Theo dõi thời gian thực vị trí của từng mẻ gốm tại 6 trạm sản xuất liên hoàn
-                </p>
               </div>
               <button
                 className="btn btn-outline-secondary btn-sm rounded-3 d-inline-flex align-items-center gap-1.5 px-3 py-1.5"
@@ -172,7 +169,7 @@ export default function App() {
           <div className="w-100">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
-                <h4 className="fw-bold brand-font text-dark mb-0 fs-3">Danh Sách Đơn Hàng & Thông Số Gemini AI</h4>
+                <h4 className="fw-bold brand-font text-dark mb-0 fs-3">Danh Sách Đơn Hàng & Thông Số AI</h4>
                 <p className="text-muted mb-0 small">
                   Quản lý đơn hàng tiếp nhận và xem chi tiết thông số kỹ thuật AI bóc tách
                 </p>
@@ -202,7 +199,10 @@ export default function App() {
       {/* Modals */}
       <OrderFormModal
         isOpen={isOrderModalOpen}
-        onClose={() => setIsOrderModalOpen(false)}
+        onClose={() => {
+          setIsOrderModalOpen(false);
+          setLastAiResult(null);
+        }}
         onSubmit={handleCreateOrder}
         isLoading={isLoading}
         aiResult={lastAiResult}
@@ -215,6 +215,7 @@ export default function App() {
         batch={selectedBatchForAdvance}
         onSubmit={handleAdvanceStage}
         isLoading={isLoading}
+        onSwitchToQc={(batch) => setSelectedBatchForQc(batch)}
       />
 
       <QcModal
