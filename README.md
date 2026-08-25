@@ -6,7 +6,7 @@
 Xưởng gốm sứ Bát Tràng tiếp nhận hàng trăm đơn hàng gia công chế tác gốm sứ thủ công và công nghiệp mỗi tháng. Các đơn hàng gửi về từ các đại lý, nhà hàng, khách sạn thường ở dạng câu văn mô tả tự nhiên (Ví dụ: *"Đơn 500 Bộ ấm trà tử sa họa tiết men rạn cổ cao 18cm, nung lò 1250°C trong 20 giờ, giao gấp trong 7 ngày"*).
 
 ### Các Thách Thức Đặt Ra Cho Giao Diện Web
-1. **Theo dõi trực quan 6 công đoạn**: Quá trình sản xuất trải qua 6 trạm liên hoàn (*Tạo hình mộc $\rightarrow$ Phơi sấy & Sửa mộc $\rightarrow$ Vẽ họa tiết $\rightarrow$ Tráng men $\rightarrow$ Vào lò nung $\rightarrow$ QC & Đóng gói*). Thợ xưởng và quản lý cần một màn hình rộng trực quan hóa vị trí của từng mẻ gốm mà không bị che khuất chữ hay đè icon.
+1. **Theo dõi trực quan 6 công đoạn**: Quá trình sản xuất trải qua 6 trạm liên hoàn (*Tạo hình mộc --> Phơi sấy & Sửa mộc --> Vẽ họa tiết --> Tráng men --> Vào lò nung --> QC & Đóng gói*). Thợ xưởng và quản lý cần một màn hình rộng trực quan hóa vị trí của từng mẻ gốm mà không bị che khuất chữ hay đè icon.
 2. **Tiếp nhận đơn hàng tự nhiên**: Tránh việc thợ phải gõ tay nhập liệu rườm rà. Giao diện tích hợp AI bóc tách tự động 10 thông số kỹ thuật và hiển thị bảng xem trước (preview) ngay trong Popup.
 3. **Cảnh báo lỗi khẩn cấp tức thì**: Khi thợ QC kiểm định và phát hiện tỷ lệ lỗi vượt quá 3%, giao diện Web lập tức bật thông báo đỏ khẩn cấp và hiển thị viền báo động trực quan.
 
