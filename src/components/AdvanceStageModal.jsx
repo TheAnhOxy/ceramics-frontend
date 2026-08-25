@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-export default function AdvanceStageModal({ isOpen, onClose, batch, onSubmit, isLoading }) {
+export default function AdvanceStageModal({ isOpen, onClose, batch, onSubmit, isLoading, onSwitchToQc }) {
   const [note, setNote] = useState('');
   const [performerId, setPerformerId] = useState(2);
   const [forceSkip, setForceSkip] = useState(false);
@@ -37,6 +37,24 @@ export default function AdvanceStageModal({ isOpen, onClose, batch, onSubmit, is
                 <div className="fw-bold text-dark">
                   Công đoạn hiện tại: <span className="text-warning">{batch.currentStage?.name}</span>
                 </div>
+              </div>
+
+              {/* Banner gợi ý chuyển sang Popup QC nếu muốn kiểm định lỗi */}
+              <div className="p-2.5 bg-warning bg-opacity-15 border border-warning rounded-3 mb-3 d-flex align-items-center justify-content-between gap-2">
+                <small className="text-dark fw-medium">
+                  <i className="fa-solid fa-triangle-exclamation me-1.5 text-warning"></i>
+                  Muốn ghi nhận kết quả QC & tính tỷ lệ lỗi (%)?
+                </small>
+                <button
+                  type="button"
+                  className="btn btn-warning btn-sm text-dark fw-bold px-2.5 py-1 text-nowrap"
+                  onClick={() => {
+                    onClose();
+                    if (onSwitchToQc) onSwitchToQc(batch);
+                  }}
+                >
+                  <i className="fa-solid fa-shield-cat me-1"></i> Form QC
+                </button>
               </div>
 
               <div className="mb-3">
