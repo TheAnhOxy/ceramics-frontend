@@ -10,7 +10,7 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, onOpenCre
           <i className="fa-solid fa-fire-burner text-warning fs-3"></i>
           <div>
             <span className="brand-font d-block leading-none">Xưởng Gốm Bát Tràng</span>
-            <small className="text-white-50 fw-normal fs-7">Hệ Thống Điều Phối & Giám Sát AI</small>
+            <small className="text-white-50 fw-normal fs-7">Hệ Thống Điều Phối Sản Xuất</small>
           </div>
           <span className="ceramic-brand-badge ms-2">
             <i className="fa-solid fa-robot me-1"></i>AI Engine
@@ -44,7 +44,7 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, onOpenCre
           </button>
         </div>
 
-        {/* Action Button & Backend Status */}
+        {/* Action Button & Status */}
         <div className="d-flex align-items-center gap-3">
           <div className="d-flex align-items-center gap-2 bg-black bg-opacity-30 px-3 py-1.5 rounded-pill border border-white border-opacity-10">
             <span
@@ -52,7 +52,7 @@ export default function Navbar({ activeTab, setActiveTab, isConnected, onOpenCre
               role="status"
             ></span>
             <small className="text-light fw-semibold">
-              {isConnected ? 'Backend 8080: Sẵn Sàng' : 'Mất Kết Nối Server'}
+              {isConnected ? 'Hệ Thống Sẵn Sàng' : 'Mất Kết Nối Server'}
             </small>
           </div>
 
