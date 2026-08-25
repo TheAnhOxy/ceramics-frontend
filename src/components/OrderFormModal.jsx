@@ -16,7 +16,28 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
     }
   }, [isOpen, aiResult]);
 
+  const handleCloseModal = () => {
+    setDescription(DEFAULT_DESC);
+    setCustomerName(DEFAULT_CUST);
+    setQuantity(200);
+    onClose();
+  };
+
   if (!isOpen) return null;
+
+  // Tự động nhận diện và điền số lượng sản phẩm khi gõ văn bản tự nhiên
+  const handleDescriptionChange = (e) => {
+    const val = e.target.value;
+    setDescription(val);
+
+    const match = val.match(/(?:đơn|đặt|cần|khoảng)?\s*(\d{1,6})/i);
+    if (match && match[1]) {
+      const num = parseInt(match[1], 10);
+      if (num > 0 && num <= 100000) {
+        setQuantity(num);
+      }
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -39,9 +60,9 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
           <div className="modal-header modal-header-ceramic">
             <h5 className="modal-title fw-bold brand-font text-dark d-flex align-items-center gap-2">
               <i className="fa-solid fa-wand-magic-sparkles text-warning fs-4"></i>
-              <span>Tiếp Nhận Đơn Hàng & Gemini AI Phân Tích Thông Số</span>
+              <span>Tiếp Nhận Đơn Hàng & AI Phân Tích Thông Số</span>
             </h5>
-            <button type="button" className="btn-close" onClick={onClose} disabled={isLoading}></button>
+            <button type="button" className="btn-close" onClick={handleCloseModal} disabled={isLoading}></button>
           </div>
 
           {/* Form Body */}
@@ -62,24 +83,29 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
 
               <div className="mb-3">
                 <label className="form-label fw-semibold text-dark">
-                  Yêu Cầu Đơn Hàng (Văn Bản Tự Nhiên Để Gemini AI Bóc Tách)
+                  Yêu Cầu Đơn Hàng (Văn Bản Tự Nhiên Để AI Bóc Tách)
                 </label>
                 <textarea
                   className="form-control rounded-3"
                   rows="3"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={handleDescriptionChange}
                   placeholder="Nhập văn bản mô tả tự nhiên..."
                   required
                 ></textarea>
                 <small className="text-muted">
                   <i className="fa-solid fa-lightbulb me-1 text-warning"></i>
-                  Gemini AI sẽ tự động phân tích loại men, nhiệt độ nung, ước tính lượng đất sét và độ ưu tiên.
+                  AI sẽ tự động bóc tách số lượng, loại men, nhiệt độ nung, thời gian nung và độ ưu tiên từ câu văn của bạn.
                 </small>
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold text-dark">Số Lượng Sản Phẩm (Chiếc)</label>
+                <div className="d-flex justify-content-between align-items-center mb-1">
+                  <label className="form-label fw-semibold text-dark mb-0">Số Lượng Sản Phẩm (Chiếc)</label>
+                  <small className="text-success fw-semibold">
+                    <i className="fa-solid fa-magic me-1"></i>Tự động nhận diện từ văn bản mô tả
+                  </small>
+                </div>
                 <input
                   type="number"
                   className="form-control rounded-3"
@@ -90,12 +116,12 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
                 />
               </div>
 
-              {/* KẾT QUẢ BÓC TÁCH CỦA GEMINI AI - SHOW LÊN KHI AI PHÂN TÍCH XONG */}
+              {/* KẾT QUẢ BÓC TÁCH CỦA AI - SHOW LÊN KHI AI PHÂN TÍCH XONG */}
               {aiResult && (
                 <div className="ai-preview-box mt-4 border-success bg-success bg-opacity-10 p-3 rounded-3">
                   <h6 className="fw-bold text-success d-flex align-items-center gap-2 mb-3 fs-5">
                     <i className="fa-solid fa-circle-check"></i>
-                    <span>KẾT QUẢ GEMINI AI BÓC TÁCH THÔNG SỐ TỰ ĐỘNG:</span>
+                    <span>KẾT QUẢ AI BÓC TÁCH THÔNG SỐ TỰ ĐỘNG:</span>
                   </h6>
 
                   <div className="row g-3 small">
@@ -145,7 +171,7 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
                       <div className="p-2 bg-white rounded border d-flex justify-content-between align-items-center">
                         <div>
                           <small className="text-muted me-2">Đánh giá AI:</small>
-                          <span className="text-success fw-semibold">{aiResult.confidence_note || 'Trích xuất chính xác bởi Gemini AI'}</span>
+                          <span className="text-success fw-semibold">{aiResult.confidence_note || 'Trích xuất chính xác bởi AI'}</span>
                         </div>
                         <span className="badge bg-danger fs-6">ĐỘ ƯU TIÊN: {aiResult.priority_level || 'HIGH'}</span>
                       </div>
@@ -160,14 +186,14 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
             <div className="modal-footer border-top-0 px-4 pb-4">
               {aiResult ? (
                 <>
-                  <button type="button" className="btn btn-outline-secondary rounded-3 px-4" onClick={onClose}>
+                  <button type="button" className="btn btn-outline-secondary rounded-3 px-4" onClick={handleCloseModal}>
                     Đóng Modal
                   </button>
                   <button
                     type="button"
                     className="btn btn-success rounded-3 px-4 shadow-sm fw-bold"
                     onClick={() => {
-                      onClose();
+                      handleCloseModal();
                       if (onGoToKanban) onGoToKanban();
                     }}
                   >
@@ -177,7 +203,7 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
                 </>
               ) : (
                 <>
-                  <button type="button" className="btn btn-light rounded-3 px-4" onClick={onClose} disabled={isLoading}>
+                  <button type="button" className="btn btn-light rounded-3 px-4" onClick={handleCloseModal} disabled={isLoading}>
                     Hủy Bỏ
                   </button>
 
@@ -185,7 +211,7 @@ export default function OrderFormModal({ isOpen, onClose, onSubmit, isLoading, a
                     {isLoading ? (
                       <>
                         <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                        Gemini AI Đang Phân Tích...
+                        AI Đang Phân Tích...
                       </>
                     ) : (
                       <>
